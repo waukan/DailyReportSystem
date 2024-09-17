@@ -104,6 +104,20 @@ public class EmployeeController {
         return "employees/update";
     }
 
+    @PostMapping(value = "/update/{code}/")
+    public String renew(@Validated Employee employee, BindingResult res, Model model) {
+        if ("".equals(employee.getPassword())) {
+            model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.BLANK_ERROR),
+                    ErrorMessage.getErrorValue(ErrorKinds.BLANK_ERROR));
+            return "/employees/update";
+        }
+        if (res.hasErrors()) {
+            return "/employees/update";
+        }
+
+        return "redirect:/employees";
+    }
+
     // 従業員削除処理
     @PostMapping(value = "/{code}/delete")
     public String delete(@PathVariable String code, @AuthenticationPrincipal UserDetail userDetail, Model model) {
