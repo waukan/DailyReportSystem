@@ -52,6 +52,30 @@ public class EmployeeService {
         return ErrorKinds.SUCCESS;
     }
 
+    @Transactional
+    public ErrorKinds rewrite(String code, Employee employee) {
+
+
+        if ("".equals(employee.getPassword())) {
+            String password = findByCode(code).getPassword();
+            employee.setPassword(password);
+        }else {
+        ErrorKinds result = employeePasswordCheck(employee);
+        if (ErrorKinds.CHECK_OK != result) {
+            return result;
+        }
+        }
+
+        LocalDateTime create =findByCode(code).getCreatedAt();
+        LocalDateTime now = LocalDateTime.now();
+        employee.setCreatedAt(create);
+        employee.setUpdatedAt(now);
+
+        employeeRepository.save(employee);
+        return ErrorKinds.SUCCESS;
+}
+
+
     // 従業員削除
     @Transactional
     public ErrorKinds delete(String code, UserDetail userDetail) {

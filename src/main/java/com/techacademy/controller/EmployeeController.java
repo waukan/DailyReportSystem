@@ -98,20 +98,22 @@ public class EmployeeController {
         return "redirect:/employees";
     }
 
-    @GetMapping(value = "/update/{code}/")
-    public String update(@PathVariable("code") String code, Model model) {
+    @GetMapping(value = "/{code}/update")
+    public String edit(@PathVariable("code") String code, Model model) {
         model.addAttribute("employee",employeeService.findByCode(code));
         return "employees/update";
     }
 
-    @PostMapping(value = "/update/{code}/")
-    public String renew(@Validated Employee employee, BindingResult res, Model model) {
-        if ("".equals(employee.getPassword())) {
-            model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.BLANK_ERROR),
-                    ErrorMessage.getErrorValue(ErrorKinds.BLANK_ERROR));
+    @PostMapping(value = "/{code}/update")
+    public String update(@PathVariable("code") String code, @Validated Employee employee, BindingResult res, Model model) {
+
+        if (res.hasErrors()) {
             return "/employees/update";
         }
-        if (res.hasErrors()) {
+
+        ErrorKinds result = employeeService.rewrite(code,employee);
+        if (ErrorMessage.contains(result)) {
+            model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
             return "/employees/update";
         }
 
