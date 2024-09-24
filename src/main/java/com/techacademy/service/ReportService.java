@@ -1,5 +1,6 @@
 package com.techacademy.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.techacademy.constants.ErrorKinds;
+import com.techacademy.entity.Employee;
 import com.techacademy.entity.Report;
 import com.techacademy.repository.ReportRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,32 +31,28 @@ public class ReportService {
         this.reportRepository = reportRepository;
         this.passwordEncoder = passwordEncoder;
     }
-/*
-    // 従業員保存
+
+    // 日報保存
     @Transactional
-    public ErrorKinds save(Employee employee) {
+    public ErrorKinds save(Employee employee, Report report) {
 
-        // パスワードチェック
-        ErrorKinds result = employeePasswordCheck(employee);
-        if (ErrorKinds.CHECK_OK != result) {
-            return result;
-        }
 
-        // 従業員番号重複チェック
-        if (findByCode(employee.getCode()) != null) {
-            return ErrorKinds.DUPLICATE_ERROR;
-        }
+        if(findByReportDate(report.getReportDate(),employee.getCode()) != null) {
+                return ErrorKinds.DATECHECK_ERROR;
+            }
 
-        employee.setDeleteFlg(false);
+        report.setEmployee(employee);
+
+        report.setDeleteFlg(false);
 
         LocalDateTime now = LocalDateTime.now();
-        employee.setCreatedAt(now);
-        employee.setUpdatedAt(now);
+        report.setCreatedAt(now);
+        report.setUpdatedAt(now);
 
-        employeeRepository.save(employee);
+        reportRepository.save(report);
         return ErrorKinds.SUCCESS;
     }
-
+/*
     @Transactional
     public ErrorKinds rewrite(String code, Employee employee) {
 
@@ -106,16 +104,21 @@ public class ReportService {
     }
 
 
-/*
+
     // 1件を検索
-    public Employee findByCode(String code) {
+    public Report findByCode(String code) {
         // findByIdで検索
-        Optional<Employee> option = employeeRepository.findById(code);
+        Optional<Report> option = reportRepository.findById(code);
         // 取得できなかった場合はnullを返す
-        Employee employee = option.orElse(null);
-        return employee;
+        Report report = option.orElse(null);
+        return report;
     }
 
+    public Report findByReportDate(LocalDate date, String code) {
+        return reportRepository.findByReportDateAndEmployeeCode(date,code);
+    }
+
+/*
     // 従業員パスワードチェック
     private ErrorKinds employeePasswordCheck(Employee employee) {
 

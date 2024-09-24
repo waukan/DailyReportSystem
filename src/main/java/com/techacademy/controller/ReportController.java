@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.techacademy.constants.ErrorKinds;
 import com.techacademy.constants.ErrorMessage;
-
+import com.techacademy.entity.Employee;
 import com.techacademy.entity.Report;
 import com.techacademy.service.ReportService;
 import com.techacademy.service.UserDetail;
@@ -59,52 +59,34 @@ public class ReportController {
         model.addAttribute("employee", employeeService.findByCode(code));
         return "employees/detail";
     }
-
-    // 従業員新規登録画面
+*/
+    // 日報新規登録画面
     @GetMapping(value = "/add")
-    public String create(@ModelAttribute Employee employee) {
+    public String create(@ModelAttribute Report report) {
 
-        return "employees/new";
+        return "reports/new";
     }
-/*
-    // 従業員新規登録処理
+
+    // 日報新規登録処理
     @PostMapping(value = "/add")
-    public String add(@Validated Employee employee, BindingResult res, Model model) {
-
-        // パスワード空白チェック
-        if ("".equals(employee.getPassword())) {
-            // パスワードが空白だった場合
-            model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.BLANK_ERROR),
-                    ErrorMessage.getErrorValue(ErrorKinds.BLANK_ERROR));
-
-            return create(employee);
-
-        }
+    public String add(@AuthenticationPrincipal UserDetail user, @Validated Report report, BindingResult res, Model model) {
 
         // 入力チェック
         if (res.hasErrors()) {
-            return create(employee);
+            return create(report);
         }
 
-        // 論理削除を行った従業員番号を指定すると例外となるためtry~catchで対応
-        // (findByIdでは削除フラグがTRUEのデータが取得出来ないため)
-        try {
-            ErrorKinds result = employeeService.save(employee);
+        Employee employee = user.getEmployee();
+        ErrorKinds result = reportService.save(employee,report);
 
-            if (ErrorMessage.contains(result)) {
-                model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
-                return create(employee);
+        if (ErrorMessage.contains(result)) {
+            model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
+            return create(report);
             }
 
-        } catch (DataIntegrityViolationException e) {
-            model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.DUPLICATE_EXCEPTION_ERROR),
-                    ErrorMessage.getErrorValue(ErrorKinds.DUPLICATE_EXCEPTION_ERROR));
-            return create(employee);
-        }
-
-        return "redirect:/employees";
+        return "redirect:/reports";
     }
-
+/*
     @GetMapping(value = "/{code}/update")
     public String edit(@PathVariable("code") String code, Model model) {
         model.addAttribute("employee",employeeService.findByCode(code));
