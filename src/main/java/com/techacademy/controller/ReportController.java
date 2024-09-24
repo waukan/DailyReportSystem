@@ -51,15 +51,15 @@ public class ReportController {
 
         return "reports/list";
     }
-/*
-    // 従業員詳細画面
-    @GetMapping(value = "/{code}/")
-    public String detail(@PathVariable String code, Model model) {
 
-        model.addAttribute("employee", employeeService.findByCode(code));
-        return "employees/detail";
+    // 日報詳細画面
+    @GetMapping(value = "/{id}/")
+    public String detail(@PathVariable Integer id, Model model) {
+
+        model.addAttribute("report", reportService.findById(id));
+        return "reports/detail";
     }
-*/
+
     // 日報新規登録画面
     @GetMapping(value = "/add")
     public String create(@ModelAttribute Report report) {
@@ -108,20 +108,14 @@ public class ReportController {
 
         return "redirect:/employees";
     }
-
-    // 従業員削除処理
-    @PostMapping(value = "/{code}/delete")
-    public String delete(@PathVariable String code, @AuthenticationPrincipal UserDetail userDetail, Model model) {
-
-        ErrorKinds result = employeeService.delete(code, userDetail);
-
-        if (ErrorMessage.contains(result)) {
-            model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
-            model.addAttribute("employee", employeeService.findByCode(code));
-            return detail(code, model);
-        }
-
-        return "redirect:/employees";
-    }
 */
+    // 日報削除処理
+    @PostMapping(value = "/{id}/delete")
+    public String delete(@PathVariable Integer id,Model model) {
+
+        reportService.delete(id);
+
+        return "redirect:/reports";
+    }
+
 }

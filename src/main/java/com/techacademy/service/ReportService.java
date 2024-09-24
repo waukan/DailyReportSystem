@@ -76,23 +76,18 @@ public class ReportService {
         return ErrorKinds.SUCCESS;
 }
 
-
+*/
     // 従業員削除
     @Transactional
-    public ErrorKinds delete(String code, UserDetail userDetail) {
+    public void delete(Integer id) {
 
-        // 自分を削除しようとした場合はエラーメッセージを表示
-        if (code.equals(userDetail.getEmployee().getCode())) {
-            return ErrorKinds.LOGINCHECK_ERROR;
-        }
-        Employee employee = findByCode(code);
+        Report report = findById(id);
         LocalDateTime now = LocalDateTime.now();
-        employee.setUpdatedAt(now);
-        employee.setDeleteFlg(true);
+        report.setUpdatedAt(now);
+        report.setDeleteFlg(true);
 
-        return ErrorKinds.SUCCESS;
     }
-*/
+
     // 日報一覧表示処理
     public List<Report> findAll() {
         return reportRepository.findAll();
@@ -106,9 +101,9 @@ public class ReportService {
 
 
     // 1件を検索
-    public Report findByCode(String code) {
+    public Report findById(Integer id) {
         // findByIdで検索
-        Optional<Report> option = reportRepository.findById(code);
+        Optional<Report> option = reportRepository.findById(id);
         // 取得できなかった場合はnullを返す
         Report report = option.orElse(null);
         return report;
