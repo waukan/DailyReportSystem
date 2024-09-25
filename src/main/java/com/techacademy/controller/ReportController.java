@@ -86,29 +86,38 @@ public class ReportController {
 
         return "redirect:/reports";
     }
-/*
-    @GetMapping(value = "/{code}/update")
-    public String edit(@PathVariable("code") String code, Model model) {
-        model.addAttribute("employee",employeeService.findByCode(code));
-        return "employees/update";
+
+    //日報更新画面
+    @GetMapping(value = "/{id}/update")
+    public String edit(@PathVariable Integer id, Model model, Report report) {
+        if(id != null) {
+            model.addAttribute("report",reportService.findById(id));
+        } else {
+            id = report.getId();
+            Employee employee =reportService.findById(id).getEmployee();
+            report.setEmployee(employee);
+        }
+
+        return "reports/update";
     }
 
-    @PostMapping(value = "/{code}/update")
-    public String update(@PathVariable("code") String code, @Validated Employee employee, BindingResult res, Model model) {
+    //日報更新処理
+    @PostMapping(value = "/{id}/update")
+    public String update(@PathVariable Integer id, @Validated Report report, BindingResult res, Model model) {
 
         if (res.hasErrors()) {
-            return "/employees/update";
+            return edit(null,model,report);
         }
 
-        ErrorKinds result = employeeService.rewrite(code,employee);
+        ErrorKinds result = reportService.rewrite(report);
         if (ErrorMessage.contains(result)) {
             model.addAttribute(ErrorMessage.getErrorName(result), ErrorMessage.getErrorValue(result));
-            return "/employees/update";
+            return edit(null,model,report);
         }
 
-        return "redirect:/employees";
+        return "redirect:/reports";
     }
-*/
+
     // 日報削除処理
     @PostMapping(value = "/{id}/delete")
     public String delete(@PathVariable Integer id,Model model) {

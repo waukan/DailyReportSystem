@@ -52,32 +52,33 @@ public class ReportService {
         reportRepository.save(report);
         return ErrorKinds.SUCCESS;
     }
-/*
+
+    //日報更新
     @Transactional
-    public ErrorKinds rewrite(String code, Employee employee) {
+    public ErrorKinds rewrite(Report report) {
 
+        Integer id = report.getId();
+        Employee employee =findById(id).getEmployee();
+        report.setEmployee(employee);
 
-        if ("".equals(employee.getPassword())) {
-            String password = findByCode(code).getPassword();
-            employee.setPassword(password);
-        }else {
-        ErrorKinds result = employeePasswordCheck(employee);
-        if (ErrorKinds.CHECK_OK != result) {
-            return result;
+        if(!(findById(id).getReportDate().equals(report.getReportDate()))) {
+            if(findByReportDate(report.getReportDate(),report.getEmployee().getCode()) != null) {
+                return ErrorKinds.DATECHECK_ERROR;
+            }
         }
-        }
 
-        LocalDateTime create =findByCode(code).getCreatedAt();
+        LocalDateTime create =findById(id).getCreatedAt();
         LocalDateTime now = LocalDateTime.now();
-        employee.setCreatedAt(create);
-        employee.setUpdatedAt(now);
 
-        employeeRepository.save(employee);
+        report.setCreatedAt(create);
+        report.setUpdatedAt(now);
+
+        reportRepository.save(report);
         return ErrorKinds.SUCCESS;
 }
 
-*/
-    // 従業員削除
+
+    // 日報削除
     @Transactional
     public void delete(Integer id) {
 
@@ -99,12 +100,9 @@ public class ReportService {
     }
 
 
-
-    // 1件を検索
+    // 検索
     public Report findById(Integer id) {
-        // findByIdで検索
         Optional<Report> option = reportRepository.findById(id);
-        // 取得できなかった場合はnullを返す
         Report report = option.orElse(null);
         return report;
     }
