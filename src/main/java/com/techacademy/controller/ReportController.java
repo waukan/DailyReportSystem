@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.techacademy.constants.ErrorKinds;
 import com.techacademy.constants.ErrorMessage;
@@ -43,6 +44,32 @@ public class ReportController {
         } else {
             model.addAttribute("listSize", reportService.findByName(code).size());
             model.addAttribute("reportList", reportService.findByName(code));
+        }
+
+        return "reports/list";
+    }
+
+    //日報検索
+    @GetMapping(value = "/search")
+    public String search(@AuthenticationPrincipal UserDetail user, @RequestParam String word, Model model) {
+        if("".equals(word)) {
+            model.addAttribute(ErrorMessage.getErrorName(ErrorKinds.BLANK_ERROR),
+                    ErrorMessage.getErrorValue(ErrorKinds.BLANK_ERROR));
+            return list(user,model);
+        }
+
+        boolean isAdmin = user.getAuthorities().stream()
+                .anyMatch(auth -> "ADMIN".equals(auth.getAuthority()));
+        String code = user.getUsername();
+
+        model.addAttribute("word", word);
+
+        if(isAdmin) {
+            model.addAttribute("listSize", reportService.findByWord(word).size());
+            model.addAttribute("reportList",reportService.findByWord(word));
+        } else {
+            model.addAttribute("listSize", reportService.findByWordGeneral(code,word).size());
+            model.addAttribute("reportList",reportService.findByWordGeneral(code,word));
         }
 
         return "reports/list";

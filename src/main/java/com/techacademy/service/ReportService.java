@@ -2,6 +2,7 @@ package com.techacademy.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -89,6 +90,22 @@ public class ReportService {
     public List<Report> findByName(String code) {
         return reportRepository.findAllByEmployeeCode(code);
 
+    }
+
+    public List<Report> findByWord(String word) {
+        String word2 = word;
+        return reportRepository.findByTitleContainingOrContentContaining(word,word2);
+    }
+
+    public List<Report> findByWordGeneral(String code,String word) {
+        List<Report> reportlist = findByWord(word);
+        List<Report> resultlist = new ArrayList<>();
+        for(Report report : reportlist) {
+            if(report.getEmployee().getCode().equals(code)) {
+                resultlist.add(report);
+            }
+        }
+        return resultlist;
     }
 
 

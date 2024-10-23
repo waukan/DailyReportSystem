@@ -11,8 +11,22 @@
         <div class="mt-3 h-100 col-sm-10">
             <!-- コンテンツ -->
             <div class="container-fluid p-0">
-                <h1 class="h3 mb-3">日報 一覧</h1>
-
+                        <h1 class="h3 col-mb-3">日報 一覧</h1>
+                        <form th:action="@{/reports/search}" th:method="get">
+                            <div class="input-group mb-3">
+                                <div class="col-md-3">
+                                    <input class="form-control" type="text"  name="word">
+                                    <span th:if="${passwordError} neq null" th:text="${passwordError}" class="text-danger"></span>
+                                    <span th:if="${listSize} eq 0" th:text="'検索結果がありませんでした。'"></span>
+                                </div>
+                                <div class="col-md-3">
+                                <input type="submit" class="btn btn-primary" value="検索">
+                                </div>
+                            </div>
+                        </form>
+                        <div class="text-center mb-3">
+                            <span th:if="${word} neq null" th:text="${word} + 'の検索結果'"></span>
+                        </div>
                 <div class="row">
                     <div class="col-xl-11">
                         <div class="card">

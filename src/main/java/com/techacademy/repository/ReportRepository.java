@@ -13,4 +13,5 @@ public interface ReportRepository extends JpaRepository<Report, String> {
     public List<Report> findAllByEmployeeCode(String code);
     public Report findByReportDateAndEmployeeCode(LocalDate date, String Code);
     public Optional<Report> findById(Integer id);
+    public List<Report> findByTitleContainingOrContentContaining(String title, String content);
 }
